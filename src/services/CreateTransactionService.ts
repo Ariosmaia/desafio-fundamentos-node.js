@@ -15,19 +15,22 @@ class CreateTransactionService {
 
   public execute({ title, value, type }: Request): Transaction {
     // TODO
+    if (!['income', 'outcome'].includes(type)) {
+      throw new Error('Transaction type is invalid');
+    }
 
     const { total } = this.transactionsRepository.getBalance();
 
-    if (type === 'outcome' && value > total)
-      throw Error('Insulfficient balance');
+    if (type === 'outcome' && total < value)
+      throw new Error('You do not enough balance');
 
-    const appointment = this.transactionsRepository.create({
+    const transaction = this.transactionsRepository.create({
       title,
       value,
       type,
     });
 
-    return appointment;
+    return transaction;
   }
 }
 
